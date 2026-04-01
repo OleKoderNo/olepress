@@ -3,7 +3,7 @@ import type { Image } from "sanity";
 import { client } from "./client";
 
 // Sanity image helper
-// Creates image URLs from Sanity image objects
+// Converts Sanity image references into usable URLs
 
 const builder = createImageUrlBuilder(client);
 
