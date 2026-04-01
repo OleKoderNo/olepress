@@ -1,3 +1,4 @@
+import type { Image as SanityImage } from "sanity";
 import { Hero } from "@/components/home/Hero";
 import { ArticleCard } from "@/components/home/ArticleCard";
 import { SectionHeading } from "@/components/home/SectionHeading";
@@ -6,26 +7,36 @@ import { Section } from "@/components/layout/Section";
 import { client } from "@/lib/sanity/client";
 import { articlesQuery } from "@/lib/sanity/queries";
 
-// Home page types
-// Describes the article data we expect from Sanity
+// Home page article type
+// Describes the article data returned from Sanity
+
+type Technology = {
+	_id: string;
+	title: string;
+	slug?: {
+		current?: string;
+	};
+	skillLevel?: number;
+};
 
 type Article = {
 	_id: string;
 	title: string;
 	excerpt?: string;
+	mainImage?: SanityImage;
 	slug?: {
 		current?: string;
 	};
 	category?: {
 		title?: string;
 	};
+	technologies?: Technology[];
 };
 
 // Home page
-// Fetches article data from Sanity and renders the landing page
+// Fetches articles from Sanity and renders them as reusable cards
 
 export default async function Home() {
-	// Fetch latest articles from Sanity
 	const articles = await client.fetch<Article[]>(articlesQuery);
 
 	return (
@@ -48,23 +59,19 @@ export default async function Home() {
 								<ArticleCard
 									key={article._id}
 									title={article.title}
-									excerpt={
-										article.excerpt || "No excerpt added yet."
-									}
-									category={
-										article.category?.title || "Uncategorized"
-									}
+									excerpt={article.excerpt || "No excerpt added yet."}
+									category={article.category?.title || "Uncategorized"}
 									href={
 										article.slug?.current
 											? `/article/${article.slug.current}`
 											: "#"
 									}
+									image={article.mainImage}
+									technologies={article.technologies || []}
 								/>
 							))
 						) : (
-							<p className="text-neutral-400">
-								No articles published yet.
-							</p>
+							<p className="text-neutral-400">No articles published yet.</p>
 						)}
 					</div>
 				</Container>
