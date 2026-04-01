@@ -1,38 +1,39 @@
-// Navbar component
-// Displays site title and main navigation links
-
 import Link from "next/link";
 import { Container } from "./Container";
 
+// Navbar component
+// Displays the site brand and the main navigation links
+
+const navLinks = [
+	{ href: "/", label: "Home" },
+	{ href: "/projects", label: "Projects" },
+	{ href: "/development", label: "Development" },
+	{ href: "/reviews", label: "Reviews" },
+	{ href: "/travel", label: "Travel" },
+];
+
 export function Navbar() {
 	return (
-		<header className="border-b border-white/10">
-
-			<Container className="flex h-16 items-center justify-between">
-
-				{/* Logo / site title */}
-				<Link
-					href="/"
-					className="text-lg font-semibold tracking-wide"
-				>
+		<header className="border-b border-white/10 bg-neutral-950/95 backdrop-blur">
+			<Container className="flex min-h-16 items-center justify-between gap-6">
+				{/* Brand / site title */}
+				<Link href="/" className="text-lg font-semibold tracking-wide text-white">
 					OlePress
 				</Link>
 
-				{/* Primary navigation links */}
-				<nav className="flex gap-6 text-sm text-neutral-300">
-
-					<Link href="/category/projects">Projects</Link>
-
-					<Link href="/category/development">Development</Link>
-
-					<Link href="/category/reviews">Reviews</Link>
-
-					<Link href="/category/travel">Travel</Link>
-
+				{/* Main navigation */}
+				<nav className="hidden items-center gap-6 md:flex">
+					{navLinks.map((link) => (
+						<Link
+							key={link.href}
+							href={link.href}
+							className="text-sm text-neutral-300 transition hover:text-white"
+						>
+							{link.label}
+						</Link>
+					))}
 				</nav>
-
 			</Container>
-
 		</header>
 	);
 }

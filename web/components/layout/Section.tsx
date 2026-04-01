@@ -1,16 +1,13 @@
+import { ReactNode } from "react";
+
 // Section component
-// Adds vertical spacing between major page sections
+// Adds reusable vertical spacing between page sections
 
 type SectionProps = {
-	children: React.ReactNode;
+	children: ReactNode;
 	className?: string;
 };
 
-export function Section({ children, className }: SectionProps) {
-	return (
-		// Provides consistent spacing between layout sections
-		<section className={`py-16 ${className ?? ""}`}>
-			{children}
-		</section>
-	);
+export function Section({ children, className = "" }: SectionProps) {
+	return <section className={`py-16 ${className}`}>{children}</section>;
 }

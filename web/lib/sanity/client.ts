@@ -1,5 +1,8 @@
 import { createClient } from "next-sanity";
 
+// Sanity client
+// Handles communication between the frontend and your Sanity dataset
+
 export const client = createClient({
 	projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
 	dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,

@@ -1,17 +1,13 @@
 import { ReactNode } from "react";
 
 // Container component
-// Keeps content centered and limits maximum width across pages
+// Keeps page content centered with consistent width and padding
 
 type ContainerProps = {
 	children: ReactNode;
 	className?: string;
 };
 
-export function Container({ children, className }: ContainerProps) {
-	return (
-		<div className={`mx-auto max-w-6xl px-6 ${className ?? ""}`}>
-			{children}
-		</div>
-	);
+export function Container({ children, className = "" }: ContainerProps) {
+	return <div className={`mx-auto w-full max-w-6xl px-6 ${className}`}>{children}</div>;
 }
