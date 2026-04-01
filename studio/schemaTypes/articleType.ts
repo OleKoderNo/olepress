@@ -11,6 +11,7 @@ export const articleType = defineType({
 			type: "string",
 			validation: (rule) => rule.required().min(5).max(120),
 		}),
+
 		defineField({
 			name: "slug",
 			title: "Slug",
@@ -21,6 +22,7 @@ export const articleType = defineType({
 			},
 			validation: (rule) => rule.required(),
 		}),
+
 		defineField({
 			name: "excerpt",
 			title: "Excerpt",
@@ -28,14 +30,14 @@ export const articleType = defineType({
 			rows: 3,
 			validation: (rule) => rule.max(220),
 		}),
+
 		defineField({
 			name: "mainImage",
 			title: "Main image",
 			type: "image",
-			options: {
-				hotspot: true,
-			},
+			options: { hotspot: true },
 		}),
+
 		defineField({
 			name: "body",
 			title: "Body",
@@ -43,6 +45,7 @@ export const articleType = defineType({
 			of: [{ type: "block" }],
 			validation: (rule) => rule.required(),
 		}),
+
 		defineField({
 			name: "category",
 			title: "Category",
@@ -50,6 +53,7 @@ export const articleType = defineType({
 			to: [{ type: "category" }],
 			validation: (rule) => rule.required(),
 		}),
+
 		defineField({
 			name: "author",
 			title: "Author",
@@ -57,6 +61,7 @@ export const articleType = defineType({
 			to: [{ type: "author" }],
 			validation: (rule) => rule.required(),
 		}),
+
 		defineField({
 			name: "publishedAt",
 			title: "Published at",
@@ -64,28 +69,48 @@ export const articleType = defineType({
 			initialValue: () => new Date().toISOString(),
 			validation: (rule) => rule.required(),
 		}),
+
 		defineField({
 			name: "isPremium",
 			title: "Premium article",
 			type: "boolean",
 			initialValue: false,
 		}),
+
 		defineField({
 			name: "isProject",
 			title: "Project article",
 			type: "boolean",
 			initialValue: false,
 		}),
+
+		// 👇 Only visible when isProject = true
+
+		defineField({
+			name: "githubUrl",
+			title: "GitHub repository",
+			type: "url",
+			hidden: ({ document }) => !document?.isProject,
+		}),
+
+		defineField({
+			name: "liveUrl",
+			title: "Live demo URL",
+			type: "url",
+			hidden: ({ document }) => !document?.isProject,
+		}),
 	],
+
 	preview: {
 		select: {
 			title: "title",
 			subtitle: "category.title",
 			media: "mainImage",
+			isProject: "isProject",
 		},
-		prepare({ title, subtitle, media }) {
+		prepare({ title, subtitle, media, isProject }) {
 			return {
-				title,
+				title: isProject ? `🛠 ${title}` : title,
 				subtitle: subtitle ? `Category: ${subtitle}` : "No category",
 				media,
 			};
