@@ -4,6 +4,7 @@ export const articleType = defineType({
 	name: "article",
 	title: "Article",
 	type: "document",
+
 	fields: [
 		defineField({
 			name: "title",
@@ -28,6 +29,7 @@ export const articleType = defineType({
 			title: "Excerpt",
 			type: "text",
 			rows: 3,
+			description: "Short summary used on article cards",
 			validation: (rule) => rule.max(220),
 		}),
 
@@ -81,16 +83,19 @@ export const articleType = defineType({
 			name: "isProject",
 			title: "Project article",
 			type: "boolean",
+			description: "Enable if this article represents a portfolio project",
 			initialValue: false,
 		}),
-
-		// 👇 Only visible when isProject = true
 
 		defineField({
 			name: "githubUrl",
 			title: "GitHub repository",
 			type: "url",
 			hidden: ({ document }) => !document?.isProject,
+			validation: (rule) =>
+				rule.uri({
+					scheme: ["http", "https"],
+				}),
 		}),
 
 		defineField({
@@ -98,20 +103,44 @@ export const articleType = defineType({
 			title: "Live demo URL",
 			type: "url",
 			hidden: ({ document }) => !document?.isProject,
+			validation: (rule) =>
+				rule.uri({
+					scheme: ["http", "https"],
+				}),
+		}),
+
+		defineField({
+			name: "technologies",
+			title: "Technologies",
+			type: "array",
+			of: [
+				{
+					type: "reference",
+					to: [{ type: "technology" }],
+				},
+			],
+			hidden: ({ document }) => !document?.isProject,
 		}),
 	],
 
 	preview: {
 		select: {
 			title: "title",
-			subtitle: "category.title",
-			media: "mainImage",
+			category: "category.title",
 			isProject: "isProject",
+			isPremium: "isPremium",
+			media: "mainImage",
 		},
-		prepare({ title, subtitle, media, isProject }) {
+
+		prepare({ title, category, isProject, isPremium, media }) {
+			let prefix = "";
+
+			if (isProject) prefix += "🛠 ";
+			if (isPremium) prefix += "⭐ ";
+
 			return {
-				title: isProject ? `🛠 ${title}` : title,
-				subtitle: subtitle ? `Category: ${subtitle}` : "No category",
+				title: `${prefix}${title}`,
+				subtitle: category ? `Category: ${category}` : "No category",
 				media,
 			};
 		},
