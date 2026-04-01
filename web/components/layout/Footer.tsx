@@ -1,7 +1,7 @@
 // Footer component
 // Displays copyright and site ownership information
 
-import { Container } from "../Container";
+import { Container } from "./Container";
 
 export function Footer() {
 	return (
