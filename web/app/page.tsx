@@ -1,4 +1,3 @@
-import type { Image as SanityImage } from "sanity";
 import { Hero } from "@/components/home/Hero";
 import { ArticleCard } from "@/components/home/ArticleCard";
 import { SectionHeading } from "@/components/home/SectionHeading";
@@ -6,45 +5,18 @@ import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { client } from "@/lib/sanity/client";
 import { articlesQuery } from "@/lib/sanity/queries";
-
-// Home page article type
-// Describes the article data returned from Sanity
-
-type Technology = {
-	_id: string;
-	title: string;
-	slug?: {
-		current?: string;
-	};
-	skillLevel?: number;
-};
-
-type Article = {
-	_id: string;
-	title: string;
-	excerpt?: string;
-	mainImage?: SanityImage;
-	slug?: {
-		current?: string;
-	};
-	category?: {
-		title?: string;
-	};
-	technologies?: Technology[];
-};
+import type { ArticlePreview } from "@/lib/types";
 
 // Home page
 // Fetches articles from Sanity and renders them as reusable cards
 
 export default async function Home() {
-	const articles = await client.fetch<Article[]>(articlesQuery);
+	const articles = await client.fetch<ArticlePreview[]>(articlesQuery);
 
 	return (
 		<main>
-			{/* Hero section */}
 			<Hero />
 
-			{/* Latest stories section */}
 			<Section>
 				<Container>
 					<SectionHeading
@@ -61,11 +33,7 @@ export default async function Home() {
 									title={article.title}
 									excerpt={article.excerpt || "No excerpt added yet."}
 									category={article.category?.title || "Uncategorized"}
-									href={
-										article.slug?.current
-											? `/article/${article.slug.current}`
-											: "#"
-									}
+									href={article.slug && article.category?.slug ? `/${article.category.slug}/${article.slug}` : "#"}
 									image={article.mainImage}
 									technologies={article.technologies || []}
 								/>
@@ -77,7 +45,6 @@ export default async function Home() {
 				</Container>
 			</Section>
 
-			{/* About the site section */}
 			<Section className="border-t border-white/10">
 				<Container>
 					<SectionHeading
