@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Container } from "./Container";
 
 // Navbar component
 // Displays the site brand and main navigation links
-// Includes a mobile hamburger menu for smaller screens
+// Includes active link styling and a mobile hamburger menu
 
 const navLinks = [
 	{ href: "/", label: "Home" },
@@ -18,22 +19,30 @@ const navLinks = [
 
 export function Navbar() {
 	const [isOpen, setIsOpen] = useState(false);
+	const pathname = usePathname();
 
-	// Toggles the mobile menu open and closed
 	function toggleMenu() {
-		setIsOpen((prevIsOpen) => !prevIsOpen);
+		setIsOpen((prev) => !prev);
 	}
 
-	// Closes the mobile menu after a link is clicked
 	function closeMenu() {
 		setIsOpen(false);
+	}
+
+	// Keeps parent routes active for nested pages like /projects/slug
+	function isActiveLink(href: string) {
+		if (href === "/") {
+			return pathname === "/";
+		}
+
+		return pathname === href || pathname.startsWith(`${href}/`);
 	}
 
 	return (
 		<header className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/95 backdrop-blur">
 			<Container className="py-4">
 				<div className="flex items-center justify-between gap-6">
-					{/* Brand / site title */}
+					{/* Brand */}
 					<Link
 						href="/"
 						className="text-lg font-semibold tracking-wide text-white"
@@ -44,15 +53,28 @@ export function Navbar() {
 
 					{/* Desktop navigation */}
 					<nav className="hidden items-center gap-6 md:flex">
-						{navLinks.map((link) => (
-							<Link
-								key={link.href}
-								href={link.href}
-								className="text-sm text-neutral-300 transition hover:text-white"
-							>
-								{link.label}
-							</Link>
-						))}
+						{navLinks.map((link) => {
+							const isActive = isActiveLink(link.href);
+
+							return (
+								<Link
+									key={link.href}
+									href={link.href}
+									className={`relative pb-2 text-sm transition ${
+										isActive ? "font-semibold text-white" : "text-neutral-400 hover:text-white"
+									}`}
+								>
+									{link.label}
+
+									{/* Visible underline that does not rely on text-decoration */}
+									<span
+										className={`absolute left-0 right-0 -bottom-0.5 h-0.5 rounded-full bg-white transition ${
+											isActive ? "opacity-100" : "opacity-0"
+										}`}
+									/>
+								</Link>
+							);
+						})}
 					</nav>
 
 					{/* Mobile menu button */}
@@ -64,9 +86,7 @@ export function Navbar() {
 						aria-controls="mobile-menu"
 						aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
 					>
-						<span className="sr-only">
-							{isOpen ? "Close menu" : "Open menu"}
-						</span>
+						<span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
 
 						<div className="flex h-5 w-5 flex-col items-center justify-center gap-1">
 							<span
@@ -75,9 +95,7 @@ export function Navbar() {
 								}`}
 							/>
 							<span
-								className={`block h-0.5 w-5 bg-current transition ${
-									isOpen ? "opacity-0" : ""
-								}`}
+								className={`block h-0.5 w-5 bg-current transition ${isOpen ? "opacity-0" : ""}`}
 							/>
 							<span
 								className={`block h-0.5 w-5 bg-current transition ${
@@ -94,16 +112,24 @@ export function Navbar() {
 						id="mobile-menu"
 						className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-4 md:hidden"
 					>
-						{navLinks.map((link) => (
-							<Link
-								key={link.href}
-								href={link.href}
-								onClick={closeMenu}
-								className="rounded-md px-3 py-2 text-sm text-neutral-300 transition hover:bg-white/5 hover:text-white"
-							>
-								{link.label}
-							</Link>
-						))}
+						{navLinks.map((link) => {
+							const isActive = isActiveLink(link.href);
+
+							return (
+								<Link
+									key={link.href}
+									href={link.href}
+									onClick={closeMenu}
+									className={`rounded-md px-3 py-2 text-sm transition ${
+										isActive
+											? "bg-white/10 text-white"
+											: "text-neutral-300 hover:bg-white/5 hover:text-white"
+									}`}
+								>
+									{link.label}
+								</Link>
+							);
+						})}
 					</nav>
 				) : null}
 			</Container>
