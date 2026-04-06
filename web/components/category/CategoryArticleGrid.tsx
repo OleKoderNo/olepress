@@ -5,7 +5,7 @@ import { ArticleCard } from "@/components/home/ArticleCard";
 import type { ArticlePreview } from "@/lib/types";
 
 // Category article grid
-// Renders initial category articles and lazy loads more when needed
+// Renders initial category articles and lazy loads more when the user reaches the bottom
 
 type CategoryArticleGridProps = {
 	initialArticles: ArticlePreview[];
@@ -27,56 +27,65 @@ export function CategoryArticleGrid({
 	useEffect(() => {
 		const target = loaderRef.current;
 
-		if (!target || !hasMore || isLoading) {
+		if (!target || !hasMore) {
 			return;
 		}
 
 		const observer = new IntersectionObserver(
-			async ([entry]) => {
+			(entries) => {
+				const entry = entries[0];
+
 				if (!entry.isIntersecting || isLoading) {
 					return;
 				}
 
-				setIsLoading(true);
-
-				try {
-					const response = await fetch(
-						`/api/articles?category=${category}&offset=${articles.length}&limit=9`
-					);
-
-					if (!response.ok) {
-						throw new Error("Failed to load more articles");
-					}
-
-					const data: ArticlePreview[] = await response.json();
-
-					if (data.length === 0) {
-						setHasMore(false);
-					} else {
-						setArticles((prevArticles) => [...prevArticles, ...data]);
-
-						if (articles.length + data.length >= totalCount) {
-							setHasMore(false);
-						}
-					}
-				} catch (error) {
-					console.error(error);
-				} finally {
-					setIsLoading(false);
-				}
+				void loadMoreArticles();
 			},
 			{
 				rootMargin: "300px",
-			}
+			},
 		);
 
 		observer.observe(target);
 
 		return () => observer.disconnect();
-	}, [articles.length, category, hasMore, isLoading, totalCount]);
+	}, [hasMore, isLoading]);
+
+	// Loads the next batch of articles from the API route
+	async function loadMoreArticles() {
+		setIsLoading(true);
+
+		try {
+			const response = await fetch(
+				`/api/articles?category=${category}&offset=${articles.length}&limit=9`,
+			);
+
+			if (!response.ok) {
+				throw new Error("Failed to load more articles");
+			}
+
+			const newArticles: ArticlePreview[] = await response.json();
+
+			if (newArticles.length === 0) {
+				setHasMore(false);
+				return;
+			}
+
+			setArticles((previousArticles) => [...previousArticles, ...newArticles]);
+
+			if (articles.length + newArticles.length >= totalCount) {
+				setHasMore(false);
+			}
+		} catch (error) {
+			console.error("Error loading more articles:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}
 
 	return (
 		<div>
+			{/* Article grid */}
 			<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 				{articles.map((article) => (
 					<ArticleCard
@@ -84,18 +93,25 @@ export function CategoryArticleGrid({
 						title={article.title}
 						excerpt={article.excerpt || "No excerpt added yet."}
 						category={article.category?.title || "Uncategorized"}
-						href={article.slug && article.category?.slug ? `/${article.category.slug}/${article.slug}` : "#"}
+						href={
+							article.slug && article.category?.slug
+								? `/${article.category.slug}/${article.slug}`
+								: "#"
+						}
 						image={article.mainImage}
 						technologies={article.technologies || []}
 					/>
 				))}
 			</div>
 
+			{/* Lazy loading trigger */}
 			{hasMore ? (
 				<div ref={loaderRef} className="py-10 text-center text-sm text-neutral-400">
-					{isLoading ? "Loading more articles..." : "Scroll for more"}
+					{isLoading ? "Loading more projects..." : "Scroll for more"}
 				</div>
-			) : null}
+			) : (
+				<div className="py-10 text-center text-sm text-neutral-500">No more articles to load.</div>
+			)}
 		</div>
 	);
 }

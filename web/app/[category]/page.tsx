@@ -9,30 +9,31 @@ import {
 	categoryArticleCountQuery,
 	categoryMetaQuery,
 } from "@/lib/sanity/queries";
+import type { ArticlePreview, CategoryMeta } from "@/lib/types";
 
 // Category page props
-// Receives the category slug from the route
+// In Next.js 16, params is a Promise in server page files
 
-type CategoryPageProps = {
+type Props = {
 	params: Promise<{
 		category: string;
 	}>;
 };
 
 // Category page
-// Shows all articles in one category and lazy loads more as needed
+// Loads the initial article batch for one category and passes it to the lazy-loading grid
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params }: Props) {
 	const { category } = await params;
 
 	const [categoryMeta, initialArticles, totalCount] = await Promise.all([
-		client.fetch(categoryMetaQuery, { category }),
-		client.fetch(categoryArticlesQuery, {
+		client.fetch<CategoryMeta | null>(categoryMetaQuery, { category }),
+		client.fetch<ArticlePreview[]>(categoryArticlesQuery, {
 			category,
 			start: 0,
 			end: 9,
 		}),
-		client.fetch(categoryArticleCountQuery, { category }),
+		client.fetch<number>(categoryArticleCountQuery, { category }),
 	]);
 
 	if (!categoryMeta) {
@@ -43,13 +44,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		<main>
 			<Section>
 				<Container>
+					{/* Category header */}
 					<SectionHeading
 						eyebrow="Category"
 						title={categoryMeta.title}
-						description={
-							categoryMeta.description || "Articles from this section of OlePress."
-						}
+						description={categoryMeta.description || "Articles from this section of OlePress."}
 					/>
+
+					<p className="mt-4 text-sm text-neutral-400">
+						{totalCount} article{totalCount === 1 ? "" : "s"}
+					</p>
 
 					<div className="mt-10">
 						<CategoryArticleGrid
