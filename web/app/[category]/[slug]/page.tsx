@@ -9,6 +9,7 @@ import { client } from "@/lib/sanity/client";
 import { urlFor } from "@/lib/sanity/image";
 import { articleByCategoryAndSlugQuery } from "@/lib/sanity/queries";
 import type { Technology } from "@/lib/types";
+import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -50,13 +51,10 @@ type Props = {
 export default async function ArticlePage({ params }: Props) {
 	const { category, slug } = await params;
 
-	const article = await client.fetch<Article | null>(
-		articleByCategoryAndSlugQuery,
-		{
-			category,
-			slug,
-		}
-	);
+	const article = await client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
+		category,
+		slug,
+	});
 
 	if (!article) {
 		notFound();
@@ -79,9 +77,7 @@ export default async function ArticlePage({ params }: Props) {
 
 						{/* Excerpt */}
 						{article.excerpt ? (
-							<p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-300">
-								{article.excerpt}
-							</p>
+							<p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-300">{article.excerpt}</p>
 						) : null}
 
 						{/* Author and date */}
@@ -134,14 +130,13 @@ export default async function ArticlePage({ params }: Props) {
 
 						{/* Technology badges */}
 						{article.technologies?.length ? (
-							<div className="mb-10 flex flex-wrap gap-2">
+							<div className="mb-10 flex flex-wrap gap-2 overflow-visible">
 								{article.technologies.map((technology) => (
-									<span
+									<TechnologyBadge
 										key={technology._id}
-										className="rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
-									>
-										{technology.title}
-									</span>
+										title={technology.title}
+										skillLevel={technology.skillLevel}
+									/>
 								))}
 							</div>
 						) : null}
@@ -149,10 +144,8 @@ export default async function ArticlePage({ params }: Props) {
 						{/* Article body */}
 						{article.body?.length ? (
 							<div className="prose prose-invert max-w-none">
-								<PortableText
-									value={article.body}
-									components={portableTextComponents}
-								/>							</div>
+								<PortableText value={article.body} components={portableTextComponents} />{" "}
+							</div>
 						) : null}
 					</article>
 				</Container>

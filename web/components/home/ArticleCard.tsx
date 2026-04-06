@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Image as SanityImage } from "sanity";
 import type { Technology } from "@/lib/types";
 import { urlFor } from "@/lib/sanity/image";
+import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
 // ArticleCard component
 // Displays preview of an article with image, category, excerpt,
@@ -62,23 +63,15 @@ export function ArticleCard({
 
 					{/* Technology badges */}
 					{/* Uses a reserved minimum height, but still allows more rows if needed */}
-					<div className="mt-5 min-h-22 overflow-visible">
+					<div className="mt-5 min-h-[88px] overflow-visible">
 						{technologies.length > 0 ? (
 							<div className="flex flex-wrap content-start gap-2 overflow-visible">
 								{technologies.map((technology) => (
-									<span
+									<TechnologyBadge
 										key={technology._id}
-										className="group/tech relative inline-flex cursor-default rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
-									>
-										{technology.title}
-
-										{/* Skill level tooltip */}
-										{technology.skillLevel ? (
-											<span className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-2 py-1 text-xs text-white shadow-lg group-hover/tech:block">
-												{technology.skillLevel}/5
-											</span>
-										) : null}
-									</span>
+										title={technology.title}
+										skillLevel={technology.skillLevel}
+									/>
 								))}
 							</div>
 						) : null}
