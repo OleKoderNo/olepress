@@ -26,7 +26,7 @@ export type ArticlePreview = {
 	body?: PortableTextBlock[];
 	mainImage?: SanityImage;
 	slug?: string;
-	category?: ArticleCategory;
+	category: ArticleCategory;
 	author?: ArticleAuthor;
 	technologies?: Technology[];
 	isProject?: boolean;
