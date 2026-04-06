@@ -1,15 +1,19 @@
 import Image from "next/image";
-import { PortableText } from "@portabletext/react";
 import { notFound } from "next/navigation";
+import { PortableText } from "@portabletext/react";
 import type { Image as SanityImage, PortableTextBlock } from "sanity";
-import { portableTextComponents } from "@/components/article/PortableTextComponents";
+
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
+import { RelatedProjects } from "@/components/article/RelatedProjects";
+import { portableTextComponents } from "@/components/article/PortableTextComponents";
+import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
+
 import { client } from "@/lib/sanity/client";
 import { urlFor } from "@/lib/sanity/image";
-import { articleByCategoryAndSlugQuery } from "@/lib/sanity/queries";
-import type { Technology } from "@/lib/types";
-import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
+import { articleByCategoryAndSlugQuery, relatedArticlesQuery } from "@/lib/sanity/queries";
+
+import type { Technology, ArticlePreview } from "@/lib/types";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -51,10 +55,17 @@ type Props = {
 export default async function ArticlePage({ params }: Props) {
 	const { category, slug } = await params;
 
-	const article = await client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
-		category,
-		slug,
-	});
+	// Fetch article + related projects at the same time
+	const [article, relatedArticles] = await Promise.all([
+		client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
+			category,
+			slug,
+		}),
+		client.fetch<ArticlePreview[]>(relatedArticlesQuery, {
+			category,
+			slug,
+		}),
+	]);
 
 	if (!article) {
 		notFound();
@@ -80,7 +91,7 @@ export default async function ArticlePage({ params }: Props) {
 							<p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-300">{article.excerpt}</p>
 						) : null}
 
-						{/* Author and date */}
+						{/* Author and publish date */}
 						<div className="mt-5 flex flex-wrap gap-4 text-sm text-neutral-400">
 							{article.author?.name ? <span>By {article.author.name}</span> : null}
 
@@ -144,10 +155,13 @@ export default async function ArticlePage({ params }: Props) {
 						{/* Article body */}
 						{article.body?.length ? (
 							<div className="prose prose-invert max-w-none">
-								<PortableText value={article.body} components={portableTextComponents} />{" "}
+								<PortableText value={article.body} components={portableTextComponents} />
 							</div>
 						) : null}
 					</article>
+
+					{/* Related projects section */}
+					<RelatedProjects articles={relatedArticles} />
 				</Container>
 			</Section>
 		</main>

@@ -129,3 +129,29 @@ export const articleByCategoryAndSlugQuery = groq`
     }
   }
 `;
+
+// Related articles query
+// Fetches 3 other articles from the same category excluding the current article
+
+export const relatedArticlesQuery = groq`
+  *[
+    _type == "article" &&
+    category->slug.current == $category &&
+    slug.current != $slug
+  ] | order(publishedAt desc)[0...3] {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    mainImage,
+    "category": category->{
+      title,
+      "slug": slug.current
+    },
+    "technologies": technologies[]->{
+      _id,
+      title,
+      skillLevel
+    }
+  }
+`;
