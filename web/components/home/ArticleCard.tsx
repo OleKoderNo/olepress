@@ -26,10 +26,10 @@ export function ArticleCard({
 	technologies = [],
 }: ArticleCardProps) {
 	return (
-		<Link href={href} className="group block">
-			<article className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]">
+		<Link href={href} className="group block h-full">
+			<article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]">
 				{/* Article image */}
-				<div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-white/5">
+				<div className="relative aspect-16/10 w-full overflow-hidden border-b border-white/10 bg-white/5">
 					{image ? (
 						<Image
 							src={urlFor(image).width(800).height(500).url()}
@@ -44,7 +44,7 @@ export function ArticleCard({
 					)}
 				</div>
 
-				<div className="p-6">
+				<div className="flex flex-1 flex-col p-6">
 					{/* Category label */}
 					<p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
 						{category}
@@ -56,29 +56,33 @@ export function ArticleCard({
 					</h3>
 
 					{/* Article excerpt */}
-					<p className="mt-3 text-sm leading-7 text-neutral-300">{excerpt}</p>
+					<p className="mt-3 min-h-28 text-sm leading-7 text-neutral-300 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] overflow-hidden">
+						{excerpt}
+					</p>
 
 					{/* Technology badges */}
-					{technologies.length > 0 ? (
-						<div className="mt-5 flex min-h-[56px] flex-wrap content-start gap-2">
-							{technologies.map((technology) => (
-								<span
-									key={technology._id}
-									className="group/tech relative inline-flex cursor-default rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
-								>
-									{technology.title}
+					{/* Uses a reserved minimum height, but still allows more rows if needed */}
+					<div className="mt-5 min-h-22 overflow-visible">
+						{technologies.length > 0 ? (
+							<div className="flex flex-wrap content-start gap-2 overflow-visible">
+								{technologies.map((technology) => (
+									<span
+										key={technology._id}
+										className="group/tech relative inline-flex cursor-default rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
+									>
+										{technology.title}
 
-									{technology.skillLevel ? (
-										<span className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-2 py-1 text-xs text-white shadow-lg group-hover/tech:block">
-											{technology.skillLevel}/5
-										</span>
-									) : null}
-								</span>
-							))}
-						</div>
-					) : (
-						<div className="mt-5 min-h-[56px]" />
-					)}
+										{/* Skill level tooltip */}
+										{technology.skillLevel ? (
+											<span className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-2 py-1 text-xs text-white shadow-lg group-hover/tech:block">
+												{technology.skillLevel}/5
+											</span>
+										) : null}
+									</span>
+								))}
+							</div>
+						) : null}
+					</div>
 				</div>
 			</article>
 		</Link>
