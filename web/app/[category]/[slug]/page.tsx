@@ -3,17 +3,17 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import type { Image as SanityImage, PortableTextBlock } from "sanity";
 
-import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { RelatedProjects } from "@/components/article/RelatedProjects";
 import { portableTextComponents } from "@/components/article/PortableTextComponents";
+import { Container } from "@/components/layout/Container";
+import { Section } from "@/components/layout/Section";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
 import { client } from "@/lib/sanity/client";
 import { urlFor } from "@/lib/sanity/image";
 import { articleByCategoryAndSlugQuery, relatedArticlesQuery } from "@/lib/sanity/queries";
-
-import type { Technology, ArticlePreview } from "@/lib/types";
+import type { ArticlePreview, Technology } from "@/lib/types";
+import { getReadingTime } from "@/lib/utils/readingTime";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -71,6 +71,8 @@ export default async function ArticlePage({ params }: Props) {
 		notFound();
 	}
 
+	const readingTime = getReadingTime(article.body);
+
 	return (
 		<main>
 			<Section>
@@ -91,18 +93,20 @@ export default async function ArticlePage({ params }: Props) {
 							<p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-300">{article.excerpt}</p>
 						) : null}
 
-						{/* Author and publish date */}
+						{/* Author, publish date, and reading time */}
 						<div className="mt-5 flex flex-wrap gap-4 text-sm text-neutral-400">
 							{article.author?.name ? <span>By {article.author.name}</span> : null}
 
 							{article.publishedAt ? (
 								<span>{new Date(article.publishedAt).toLocaleDateString()}</span>
 							) : null}
+
+							{readingTime ? <span>{readingTime}</span> : null}
 						</div>
 
 						{/* Hero image */}
 						{article.mainImage ? (
-							<div className="relative mt-10 mb-10 aspect-[16/9] overflow-hidden rounded-2xl border border-white/10">
+							<div className="relative mt-10 mb-10 aspect-video overflow-hidden rounded-2xl border border-white/10">
 								<Image
 									src={urlFor(article.mainImage).width(1400).height(788).url()}
 									alt={article.title}
