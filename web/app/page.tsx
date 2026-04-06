@@ -23,6 +23,7 @@ export default async function Home() {
 						eyebrow="Front page"
 						title="Latest stories"
 						description="A mix of project breakdowns, technical write-ups, and personal articles published through OlePress."
+						level="h2"
 					/>
 
 					<div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">

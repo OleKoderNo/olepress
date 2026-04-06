@@ -49,6 +49,7 @@ export default async function CategoryPage({ params }: Props) {
 						eyebrow="Category"
 						title={categoryMeta.title}
 						description={categoryMeta.description || "Articles from this section of OlePress."}
+						level="h1"
 					/>
 
 					<p className="mt-4 text-sm text-neutral-400">

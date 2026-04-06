@@ -5,13 +5,16 @@ type SectionHeadingProps = {
 	eyebrow?: string;
 	title: string;
 	description?: string;
+	level?: "h1" | "h2";
 };
 
-export function SectionHeading({
-	eyebrow,
-	title,
-	description,
-}: SectionHeadingProps) {
+// Section heading component
+// Reusable heading block for page sections and archive headers
+// Supports semantic heading levels depending on page context
+
+export function SectionHeading({ eyebrow, title, description, level = "h2" }: SectionHeadingProps) {
+	const HeadingTag = level;
+
 	return (
 		<div className="max-w-2xl">
 			{eyebrow ? (
@@ -20,12 +23,12 @@ export function SectionHeading({
 				</p>
 			) : null}
 
-			<h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+			<HeadingTag className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
 				{title}
-			</h2>
+			</HeadingTag>
 
 			{description ? (
-				<p className="mt-4 text-base leading-7 text-neutral-300">{description}</p>
+				<p className="mt-5 text-lg leading-8 text-neutral-300">{description}</p>
 			) : null}
 		</div>
 	);
