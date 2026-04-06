@@ -1,4 +1,4 @@
-import type { Image as SanityImage } from "sanity";
+import type { Image as SanityImage, PortableTextBlock } from "sanity";
 
 // Shared frontend types
 // Keeps Sanity data types consistent across pages and components
@@ -23,6 +23,7 @@ export type ArticlePreview = {
 	_id: string;
 	title: string;
 	excerpt?: string;
+	body?: PortableTextBlock[];
 	mainImage?: SanityImage;
 	slug?: string;
 	category?: ArticleCategory;

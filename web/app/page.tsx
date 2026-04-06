@@ -32,8 +32,13 @@ export default async function Home() {
 									key={article._id}
 									title={article.title}
 									excerpt={article.excerpt || "No excerpt added yet."}
+									body={article.body}
 									category={article.category?.title || "Uncategorized"}
-									href={article.slug && article.category?.slug ? `/${article.category.slug}/${article.slug}` : "#"}
+									href={
+										article.slug && article.category?.slug
+											? `/${article.category.slug}/${article.slug}`
+											: "#"
+									}
 									image={article.mainImage}
 									technologies={article.technologies || []}
 								/>

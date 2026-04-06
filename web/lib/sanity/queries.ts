@@ -12,6 +12,7 @@ export const articlesQuery = groq`
     title,
     "slug": slug.current,
     excerpt,
+    body,
     mainImage,
     publishedAt,
     isProject,
@@ -46,6 +47,7 @@ export const categoryArticlesQuery = groq`
     title,
     "slug": slug.current,
     excerpt,
+    body,
     mainImage,
     publishedAt,
     isProject,
@@ -143,6 +145,7 @@ export const relatedArticlesQuery = groq`
     title,
     "slug": slug.current,
     excerpt,
+    body,
     mainImage,
     "category": category->{
       title,

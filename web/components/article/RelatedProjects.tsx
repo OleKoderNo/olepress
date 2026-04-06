@@ -21,6 +21,7 @@ export function RelatedProjects({ articles }: RelatedProjectsProps) {
 						key={article._id}
 						title={article.title}
 						excerpt={article.excerpt || "No excerpt added yet."}
+						body={article.body}
 						category={article.category?.title || "Uncategorized"}
 						href={
 							article.slug && article.category?.slug

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { ArticleCard } from "@/components/home/ArticleCard";
 import type { ArticlePreview } from "@/lib/types";
 
@@ -24,35 +25,12 @@ export function CategoryArticleGrid({
 
 	const loaderRef = useRef<HTMLDivElement | null>(null);
 
-	useEffect(() => {
-		const target = loaderRef.current;
-
-		if (!target || !hasMore) {
+	// Loads the next batch of articles from the API route
+	const loadMoreArticles = useCallback(async () => {
+		if (isLoading || !hasMore) {
 			return;
 		}
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const entry = entries[0];
-
-				if (!entry.isIntersecting || isLoading) {
-					return;
-				}
-
-				void loadMoreArticles();
-			},
-			{
-				rootMargin: "300px",
-			},
-		);
-
-		observer.observe(target);
-
-		return () => observer.disconnect();
-	}, [hasMore, isLoading]);
-
-	// Loads the next batch of articles from the API route
-	async function loadMoreArticles() {
 		setIsLoading(true);
 
 		try {
@@ -81,7 +59,34 @@ export function CategoryArticleGrid({
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	}, [articles.length, category, hasMore, isLoading, totalCount]);
+
+	useEffect(() => {
+		const target = loaderRef.current;
+
+		if (!target || !hasMore) {
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
+
+				if (!entry.isIntersecting) {
+					return;
+				}
+
+				void loadMoreArticles();
+			},
+			{
+				rootMargin: "300px",
+			},
+		);
+
+		observer.observe(target);
+
+		return () => observer.disconnect();
+	}, [hasMore, loadMoreArticles]);
 
 	return (
 		<div>
@@ -92,6 +97,7 @@ export function CategoryArticleGrid({
 						key={article._id}
 						title={article.title}
 						excerpt={article.excerpt || "No excerpt added yet."}
+						body={article.body}
 						category={article.category?.title || "Uncategorized"}
 						href={
 							article.slug && article.category?.slug
