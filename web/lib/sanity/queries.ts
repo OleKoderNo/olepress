@@ -1,13 +1,47 @@
 import { groq } from "next-sanity";
 
 // Sanity queries
-// Stores reusable GROQ queries for homepage, category pages, and article pages
+// Stores reusable GROQ queries for homepage, category pages, article pages,
+// related content, and featured homepage content
 
-// Homepage query
-// Fetches the latest articles for the landing page
+// Shared article fields
+// Reused across multiple queries to keep the response shape consistent
+
+const articleFields = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  excerpt,
+  body,
+  mainImage,
+  publishedAt,
+  isProject,
+  isPremium,
+  githubUrl,
+  liveUrl,
+  "category": category->{
+    title,
+    "slug": slug.current
+  },
+  "author": author->{
+    name
+  },
+  "technologies": technologies[]->{
+    _id,
+    title,
+    "slug": slug.current,
+    skillLevel
+  }
+`;
+
+// Homepage latest articles query
+// Fetches the latest non-featured articles for the landing page grid
 
 export const articlesQuery = groq`
-  *[_type == "article"] | order(publishedAt desc)[0...6] {
+  *[
+    _type == "article" &&
+    (!defined(featured) || featured != true)
+  ] | order(publishedAt desc)[0...6] {
     _id,
     title,
     "slug": slug.current,
@@ -35,6 +69,18 @@ export const articlesQuery = groq`
   }
 `;
 
+// Homepage featured article query
+// Fetches the newest featured article for the homepage spotlight section
+
+export const featuredArticlesQuery = groq`
+  *[
+    _type == "article" &&
+    featured == true
+  ] | order(publishedAt desc)[0...1] {
+    ${articleFields}
+  }
+`;
+
 // Category articles query
 // Fetches a paginated batch of articles for one category page
 
@@ -43,30 +89,7 @@ export const categoryArticlesQuery = groq`
     _type == "article" &&
     category->slug.current == $category
   ] | order(publishedAt desc)[$start...$end] {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body,
-    mainImage,
-    publishedAt,
-    isProject,
-    isPremium,
-    githubUrl,
-    liveUrl,
-    "category": category->{
-      title,
-      "slug": slug.current
-    },
-    "author": author->{
-      name
-    },
-    "technologies": technologies[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      skillLevel
-    }
+    ${articleFields}
   }
 `;
 
@@ -105,30 +128,7 @@ export const articleByCategoryAndSlugQuery = groq`
     slug.current == $slug &&
     category->slug.current == $category
   ][0]{
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body,
-    mainImage,
-    publishedAt,
-    isProject,
-    isPremium,
-    githubUrl,
-    liveUrl,
-    "category": category->{
-      title,
-      "slug": slug.current
-    },
-    "author": author->{
-      name
-    },
-    "technologies": technologies[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      skillLevel
-    }
+    ${articleFields}
   }
 `;
 
@@ -141,20 +141,6 @@ export const relatedArticlesQuery = groq`
     category->slug.current == $category &&
     slug.current != $slug
   ] | order(publishedAt desc)[0...3] {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body,
-    mainImage,
-    "category": category->{
-      title,
-      "slug": slug.current
-    },
-    "technologies": technologies[]->{
-      _id,
-      title,
-      skillLevel
-    }
+    ${articleFields}
   }
 `;
