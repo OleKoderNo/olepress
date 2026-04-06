@@ -32,6 +32,7 @@ export type ArticlePreview = {
 	isPremium?: boolean;
 	githubUrl?: string;
 	liveUrl?: string;
+	publishedAt?: string;
 };
 
 export type CategoryMeta = {
