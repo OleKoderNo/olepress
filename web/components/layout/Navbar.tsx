@@ -3,25 +3,41 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+
 import { Container } from "./Container";
+
+// Navbar auth user type
+// Keeps only the fields the navbar needs
+
+type NavbarUser = {
+	displayName?: string;
+} | null;
+
+// Navbar props
+// Accepts the current signed-in user from the server layout
+
+type NavbarProps = {
+	user: NavbarUser;
+};
 
 // Navbar component
 // Displays the site brand and main navigation links
-// Includes active link styling and a mobile hamburger menu
+// Includes active link styling, auth link, and a mobile hamburger menu
 
-const navLinks = [
-	{ href: "/", label: "Home" },
-	{ href: "/projects", label: "Projects" },
-	{ href: "/about", label: "About me" },
-	{ href: "/reviews", label: "Reviews" },
-	{ href: "/travel", label: "Travel" },
-	{ href: "/search", label: "Search" },
-	{ href: "/contact", label: "Contact" },
-];
-
-export function Navbar() {
+export function Navbar({ user }: NavbarProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const pathname = usePathname();
+
+	const navLinks = [
+		{ href: "/", label: "Home" },
+		{ href: "/projects", label: "Projects" },
+		{ href: "/about", label: "About me" },
+		{ href: "/reviews", label: "Reviews" },
+		{ href: "/travel", label: "Travel" },
+		{ href: "/search", label: "Search" },
+		{ href: "/contact", label: "Contact" },
+		{ href: user ? "/profile" : "/login", label: user ? "Profile" : "Login" },
+	];
 
 	function toggleMenu() {
 		setIsOpen((prev) => !prev);
@@ -68,7 +84,7 @@ export function Navbar() {
 								>
 									{link.label}
 
-									{/* Visible underline that does not rely on text-decoration */}
+									{/* Active underline */}
 									<span
 										className={`absolute left-0 right-0 -bottom-0.5 h-0.5 rounded-full bg-white transition ${
 											isActive ? "opacity-100" : "opacity-0"

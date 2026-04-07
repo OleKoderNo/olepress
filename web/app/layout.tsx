@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 
 // Site metadata
 // Provides default SEO and social sharing data for the full site
@@ -36,16 +37,26 @@ export const metadata: Metadata = {
 // Root layout
 // Wraps all pages with shared site structure and global styles
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const user = await getCurrentUser();
+
 	return (
 		<html lang="en">
 			<body className="min-h-screen bg-neutral-950 text-white antialiased">
 				<div className="flex min-h-screen flex-col">
-					<Navbar />
+					<Navbar
+						user={
+							user
+								? {
+										displayName: user.displayName,
+									}
+								: null
+						}
+					/>
 					<div className="flex-1">{children}</div>
 					<Footer />
 				</div>
