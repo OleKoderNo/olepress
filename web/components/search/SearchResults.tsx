@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { ArticleCard } from "@/components/home/ArticleCard";
 import type { ArticlePreview } from "@/lib/types";
+import { SearchResultCard } from "./SearchResultCard";
 
 // Search results component
 // Filters article metadata client-side and keeps the search query in the URL
@@ -85,16 +85,7 @@ export function SearchResults({ articles }: SearchResultsProps) {
 			{filteredArticles.length > 0 ? (
 				<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 					{filteredArticles.map((article) => (
-						<ArticleCard
-							key={article._id}
-							title={article.title}
-							excerpt={article.excerpt || "No excerpt added yet."}
-							body={article.body}
-							category={article.category.title}
-							href={`/${article.category.slug}/${article.slug}`}
-							image={article.mainImage}
-							technologies={article.technologies || []}
-						/>
+						<SearchResultCard key={article._id} article={article} query={query} />
 					))}
 				</div>
 			) : (
