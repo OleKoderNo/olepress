@@ -2,7 +2,7 @@ import { groq } from "next-sanity";
 
 // Sanity queries
 // Stores reusable GROQ queries for homepage, category pages, article pages,
-// related content, featured homepage content, and technology pages
+// related content, featured homepage content, search, and technology pages
 
 // Shared article fields
 // Reused across multiple queries to keep the response shape consistent
@@ -30,7 +30,8 @@ const articleFields = groq`
     _id,
     title,
     "slug": slug.current,
-    skillLevel
+    skillLevel,
+    category
   }
 `;
 
@@ -54,6 +55,15 @@ export const featuredArticlesQuery = groq`
     _type == "article" &&
     featured == true
   ] | order(publishedAt desc)[0...1] {
+    ${articleFields}
+  }
+`;
+
+// Search articles query
+// Fetches all searchable article metadata for the search page
+
+export const searchArticlesQuery = groq`
+  *[_type == "article"] | order(publishedAt desc) {
     ${articleFields}
   }
 `;
@@ -134,6 +144,7 @@ export const technologyMetaQuery = groq`
     title,
     "slug": slug.current,
     skillLevel,
+    category,
     featured
   }
 `;
@@ -160,13 +171,4 @@ export const technologyArticleCountQuery = groq`
       $slug in technologies[]->slug.current
     ]
   )
-`;
-
-// Search articles query
-// Fetches all searchable article metadata for the search page
-
-export const searchArticlesQuery = groq`
-  *[_type == "article"] | order(publishedAt desc) {
-    ${articleFields}
-  }
 `;

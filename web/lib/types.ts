@@ -8,6 +8,7 @@ export type Technology = {
 	title: string;
 	slug: string;
 	skillLevel?: number;
+	category?: string;
 };
 
 export type ArticleCategory = {
@@ -47,5 +48,6 @@ export type TechnologyMeta = {
 	title: string;
 	slug: string;
 	skillLevel?: number;
+	category?: string;
 	featured?: boolean;
 };
