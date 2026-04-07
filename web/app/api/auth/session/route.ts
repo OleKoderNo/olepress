@@ -57,7 +57,14 @@ export async function POST(request: NextRequest) {
 		});
 
 		return response;
-	} catch {
-		return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
+	} catch (error) {
+		console.error("SESSION ROUTE ERROR:", error);
+
+		return NextResponse.json(
+			{
+				error: error instanceof Error ? error.message : "Failed to create session",
+			},
+			{ status: 500 },
+		);
 	}
 }
