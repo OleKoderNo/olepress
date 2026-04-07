@@ -1,19 +1,38 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { ArticleCard } from "@/components/home/ArticleCard";
 import type { ArticlePreview } from "@/lib/types";
 
 // Search results component
-// Filters article metadata client-side based on the search input
+// Filters article metadata client-side and keeps the search query in the URL
 
 type SearchResultsProps = {
 	articles: ArticlePreview[];
 };
 
 export function SearchResults({ articles }: SearchResultsProps) {
-	const [query, setQuery] = useState("");
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
+	const query = searchParams.get("q") || "";
+
+	function handleSearch(value: string) {
+		const params = new URLSearchParams(searchParams.toString());
+
+		if (value.trim()) {
+			params.set("q", value.trim());
+		} else {
+			params.delete("q");
+		}
+
+		const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+
+		router.replace(nextUrl, { scroll: false });
+	}
 
 	const filteredArticles = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
@@ -26,14 +45,14 @@ export function SearchResults({ articles }: SearchResultsProps) {
 			const title = article.title.toLowerCase();
 			const excerpt = article.excerpt?.toLowerCase() || "";
 			const category = article.category.title.toLowerCase();
-			const technologies =
-				article.technologies?.map((technology) => technology.title.toLowerCase()) || [];
+
+			const technologies = article.technologies?.map((t) => t.title.toLowerCase()) || [];
 
 			return (
 				title.includes(normalizedQuery) ||
 				excerpt.includes(normalizedQuery) ||
 				category.includes(normalizedQuery) ||
-				technologies.some((technology) => technology.includes(normalizedQuery))
+				technologies.some((tech) => tech.includes(normalizedQuery))
 			);
 		});
 	}, [articles, query]);
@@ -50,18 +69,19 @@ export function SearchResults({ articles }: SearchResultsProps) {
 					id="article-search"
 					type="search"
 					value={query}
-					onChange={(event) => setQuery(event.target.value)}
+					onChange={(event) => handleSearch(event.target.value)}
 					placeholder="Search articles, categories, or technologies"
 					className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-base text-white placeholder:text-neutral-500 outline-none transition focus:border-white/20"
 				/>
 			</div>
 
-			{/* Search summary */}
+			{/* Result count */}
 			<p className="mb-8 text-sm text-neutral-400">
-				{filteredArticles.length} result{filteredArticles.length === 1 ? "" : "s"}
+				{filteredArticles.length} result
+				{filteredArticles.length === 1 ? "" : "s"}
 			</p>
 
-			{/* Search results grid */}
+			{/* Results */}
 			{filteredArticles.length > 0 ? (
 				<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 					{filteredArticles.map((article) => (

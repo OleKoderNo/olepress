@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { SearchResults } from "@/components/search/SearchResults";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { Container } from "@/components/layout/Container";
@@ -25,7 +27,9 @@ export default async function SearchPage() {
 					/>
 
 					<div className="mt-10">
-						<SearchResults articles={articles} />
+						<Suspense fallback={<p className="text-neutral-400">Loading search…</p>}>
+							<SearchResults articles={articles} />
+						</Suspense>
 					</div>
 				</Container>
 			</Section>
