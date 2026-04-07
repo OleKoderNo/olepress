@@ -3,7 +3,11 @@ import Link from "next/link";
 // Premium article notice
 // Displays a locked content message for premium articles
 
-export function PremiumArticleNotice() {
+type PremiumArticleNoticeProps = {
+	isLoggedIn: boolean;
+};
+
+export function PremiumArticleNotice({ isLoggedIn }: PremiumArticleNoticeProps) {
 	return (
 		<div className="mt-10 rounded-3xl border border-amber-400/20 bg-amber-400/5 p-8">
 			<p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">
@@ -13,17 +17,27 @@ export function PremiumArticleNotice() {
 			<h2 className="text-2xl font-semibold tracking-tight text-white">This article is locked</h2>
 
 			<p className="mt-4 max-w-2xl text-base leading-8 text-neutral-300">
-				This article is available for premium readers. Later, this can be unlocked through your
-				premium system or app access workflow.
+				{isLoggedIn
+					? "You are signed in, but premium access is currently disabled on your profile. Enable it in your user settings to unlock this article."
+					: "Sign in with Google to access your profile and enable premium mode for this demo article system."}
 			</p>
 
 			<div className="mt-6 flex flex-wrap gap-3">
-				<Link
-					href="/contact"
-					className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
-				>
-					Contact me
-				</Link>
+				{isLoggedIn ? (
+					<Link
+						href="/profile"
+						className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+					>
+						Go to profile
+					</Link>
+				) : (
+					<Link
+						href="/login"
+						className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+					>
+						Sign in with Google
+					</Link>
+				)}
 
 				<Link
 					href="/projects"

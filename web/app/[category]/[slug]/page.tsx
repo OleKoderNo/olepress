@@ -126,6 +126,7 @@ export default async function ArticlePage({ params }: Props) {
 	}
 
 	const readingTime = getReadingTime(article.body);
+	const isLoggedIn = Boolean(currentUser);
 	const hasPremiumAccess = Boolean(currentUser?.premiumEnabled);
 
 	return (
@@ -227,7 +228,7 @@ export default async function ArticlePage({ params }: Props) {
 
 						{/* Article body or premium notice */}
 						{article.isPremium && !hasPremiumAccess ? (
-							<PremiumArticleNotice />
+							<PremiumArticleNotice isLoggedIn={isLoggedIn} />
 						) : article.body?.length ? (
 							<div className="prose prose-invert max-w-none">
 								<PortableText value={article.body} components={portableTextComponents} />
