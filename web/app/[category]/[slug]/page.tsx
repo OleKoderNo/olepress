@@ -13,11 +13,12 @@ import { Section } from "@/components/layout/Section";
 import { PremiumBadge } from "@/components/ui/PremiumBadge";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { client } from "@/lib/sanity/client";
 import { urlFor } from "@/lib/sanity/image";
-import { getReadingTime } from "@/lib/utils/readingTime";
 import { articleByCategoryAndSlugQuery, relatedArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview, Technology } from "@/lib/types";
+import { getReadingTime } from "@/lib/utils/readingTime";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -108,7 +109,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ArticlePage({ params }: Props) {
 	const { category, slug } = await params;
 
-	const [article, relatedArticles] = await Promise.all([
+	const [article, relatedArticles, currentUser] = await Promise.all([
 		client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
 			category,
 			slug,
@@ -117,6 +118,7 @@ export default async function ArticlePage({ params }: Props) {
 			category,
 			slug,
 		}),
+		getCurrentUser(),
 	]);
 
 	if (!article) {
@@ -124,6 +126,7 @@ export default async function ArticlePage({ params }: Props) {
 	}
 
 	const readingTime = getReadingTime(article.body);
+	const hasPremiumAccess = Boolean(currentUser?.premiumEnabled);
 
 	return (
 		<main>
@@ -223,7 +226,7 @@ export default async function ArticlePage({ params }: Props) {
 						) : null}
 
 						{/* Article body or premium notice */}
-						{article.isPremium ? (
+						{article.isPremium && !hasPremiumAccess ? (
 							<PremiumArticleNotice />
 						) : article.body?.length ? (
 							<div className="prose prose-invert max-w-none">
