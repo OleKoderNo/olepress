@@ -14,6 +14,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { articleByCategoryAndSlugQuery, relatedArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview, Technology } from "@/lib/types";
 import { getReadingTime } from "@/lib/utils/readingTime";
+import { BackToArchive } from "@/components/article/BackToArchive";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -29,9 +30,9 @@ type Article = {
 	isProject?: boolean;
 	githubUrl?: string;
 	liveUrl?: string;
-	category?: {
-		title?: string;
-		slug?: string;
+	category: {
+		title: string;
+		slug: string;
 	};
 	author?: {
 		name?: string;
@@ -78,6 +79,12 @@ export default async function ArticlePage({ params }: Props) {
 			<Section>
 				<Container className="max-w-4xl">
 					<article>
+						{/* Back to archive link */}
+						<BackToArchive
+							categorySlug={article.category.slug}
+							categoryTitle={article.category.title}
+						/>
+
 						{/* Category label */}
 						<p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
 							{article.category?.title ?? "Uncategorized"}
