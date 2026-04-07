@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { PremiumBadge } from "@/components/ui/PremiumBadge";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 import { urlFor } from "@/lib/sanity/image";
 import type { ArticlePreview } from "@/lib/types";
@@ -55,6 +56,13 @@ export function FeaturedArticle({ article }: FeaturedArticleProps) {
 								<span>{article.category.title}</span>
 								{readingTime ? <span>• {readingTime}</span> : null}
 							</div>
+
+							{/* Premium badge */}
+							{article.isPremium ? (
+								<div className="mb-4">
+									<PremiumBadge />
+								</div>
+							) : null}
 
 							<h3 className="text-3xl font-bold tracking-tight text-white transition group-hover:text-neutral-200 sm:text-4xl">
 								{article.title}

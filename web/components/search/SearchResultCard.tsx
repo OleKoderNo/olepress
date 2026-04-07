@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { HighlightedText } from "@/components/search/HighlightedText";
+import { PremiumBadge } from "@/components/ui/PremiumBadge";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 import { urlFor } from "@/lib/sanity/image";
 import { getReadingTime } from "@/lib/utils/readingTime";
@@ -46,6 +47,13 @@ export function SearchResultCard({ article, query }: SearchResultCardProps) {
 						{readingTime ? <span>• {readingTime}</span> : null}
 					</div>
 
+					{/* Premium badge */}
+					{article.isPremium ? (
+						<div className="mb-4">
+							<PremiumBadge />
+						</div>
+					) : null}
+
 					{/* Title */}
 					<h3 className="text-xl font-semibold text-white transition group-hover:text-neutral-200">
 						<HighlightedText text={article.title} query={query} />
@@ -57,7 +65,7 @@ export function SearchResultCard({ article, query }: SearchResultCardProps) {
 					</p>
 
 					{/* Technology badges */}
-					<div className="mt-5 min-h-22 overflow-visible">
+					<div className="mt-5 min-22 overflow-visible">
 						{article.technologies?.length ? (
 							<div className="flex flex-wrap content-start gap-2 overflow-visible">
 								{article.technologies.map((technology) => (
