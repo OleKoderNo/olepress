@@ -102,6 +102,7 @@ export function CategoryArticleGrid({
 						href={`/${article.category.slug}/${article.slug}`}
 						image={article.mainImage}
 						technologies={article.technologies || []}
+						isPremium={article.isPremium}
 					/>
 				))}
 			</div>

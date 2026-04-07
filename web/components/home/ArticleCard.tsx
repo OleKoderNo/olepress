@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Image as SanityImage, PortableTextBlock } from "sanity";
 
+import { PremiumBadge } from "@/components/ui/PremiumBadge";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 import { urlFor } from "@/lib/sanity/image";
 import type { Technology } from "@/lib/types";
@@ -9,7 +10,7 @@ import { getReadingTime } from "@/lib/utils/readingTime";
 
 // ArticleCard component
 // Displays preview of an article with image, category, reading time,
-// excerpt, and technology badges with hoverable skill levels
+// excerpt, premium state, and technology badges with hoverable skill levels
 
 type ArticleCardProps = {
 	title: string;
@@ -19,6 +20,7 @@ type ArticleCardProps = {
 	href: string;
 	image?: SanityImage;
 	technologies?: Technology[];
+	isPremium?: boolean;
 };
 
 export function ArticleCard({
@@ -29,6 +31,7 @@ export function ArticleCard({
 	href,
 	image,
 	technologies = [],
+	isPremium = false,
 }: ArticleCardProps) {
 	const readingTime = getReadingTime(body);
 
@@ -58,6 +61,13 @@ export function ArticleCard({
 						{readingTime ? <span>• {readingTime}</span> : null}
 					</div>
 
+					{/* Premium badge */}
+					{isPremium ? (
+						<div className="mb-4">
+							<PremiumBadge />
+						</div>
+					) : null}
+
 					{/* Article title */}
 					<h3 className="text-xl font-semibold text-white transition group-hover:text-neutral-200">
 						{title}
@@ -69,7 +79,6 @@ export function ArticleCard({
 					</p>
 
 					{/* Technology badges */}
-					{/* Uses a reserved minimum height, but still allows more rows if needed */}
 					<div className="mt-5 min-h-22 overflow-visible">
 						{technologies.length > 0 ? (
 							<div className="flex flex-wrap content-start gap-2 overflow-visible">

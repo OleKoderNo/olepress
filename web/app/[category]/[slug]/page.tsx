@@ -5,10 +5,12 @@ import { PortableText } from "@portabletext/react";
 import type { Image as SanityImage, PortableTextBlock } from "sanity";
 
 import { BackToArchive } from "@/components/article/BackToArchive";
+import { PremiumArticleNotice } from "@/components/article/PremiumArticleNotice";
 import { RelatedProjects } from "@/components/article/RelatedProjects";
 import { portableTextComponents } from "@/components/article/PortableTextComponents";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
+import { PremiumBadge } from "@/components/ui/PremiumBadge";
 import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
 import { client } from "@/lib/sanity/client";
@@ -29,6 +31,7 @@ type Article = {
 	mainImage?: SanityImage;
 	publishedAt?: string;
 	isProject?: boolean;
+	isPremium?: boolean;
 	githubUrl?: string;
 	liveUrl?: string;
 	category: {
@@ -55,7 +58,7 @@ type Props = {
 // Builds the full public URL for the current site
 
 function getSiteUrl() {
-	return process.env.NEXT_PUBLIC_SITE_URL || "https://olepress.vercel.app/";
+	return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 }
 
 // Page metadata
@@ -80,9 +83,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const articleUrl = `${siteUrl}/${article.category.slug}/${article.slug}`;
 	const title = `${article.title} | OlePress`;
 	const description = article.excerpt || "Read this article on OlePress.";
-	const ogImage = article.mainImage
-		? urlFor(article.mainImage).width(1200).height(630).url()
-		: `${siteUrl}/opengraph-image.png`;
 
 	return {
 		title,
@@ -93,20 +93,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 			url: articleUrl,
 			siteName: "OlePress",
 			type: "article",
-			images: [
-				{
-					url: ogImage,
-					width: 1200,
-					height: 630,
-					alt: article.title,
-				},
-			],
 		},
 		twitter: {
 			card: "summary_large_image",
 			title,
 			description,
-			images: [ogImage],
 		},
 	};
 }
@@ -117,7 +108,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ArticlePage({ params }: Props) {
 	const { category, slug } = await params;
 
-	// Fetch article and related articles at the same time
 	const [article, relatedArticles] = await Promise.all([
 		client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
 			category,
@@ -150,6 +140,13 @@ export default async function ArticlePage({ params }: Props) {
 						<p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
 							{article.category.title}
 						</p>
+
+						{/* Premium badge */}
+						{article.isPremium ? (
+							<div className="mb-4">
+								<PremiumBadge />
+							</div>
+						) : null}
 
 						{/* Title */}
 						<h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
@@ -225,8 +222,10 @@ export default async function ArticlePage({ params }: Props) {
 							</div>
 						) : null}
 
-						{/* Article body */}
-						{article.body?.length ? (
+						{/* Article body or premium notice */}
+						{article.isPremium ? (
+							<PremiumArticleNotice />
+						) : article.body?.length ? (
 							<div className="prose prose-invert max-w-none">
 								<PortableText value={article.body} components={portableTextComponents} />
 							</div>
