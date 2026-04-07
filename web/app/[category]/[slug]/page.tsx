@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import type { Image as SanityImage, PortableTextBlock } from "sanity";
 
+import { BackToArchive } from "@/components/article/BackToArchive";
 import { RelatedProjects } from "@/components/article/RelatedProjects";
 import { portableTextComponents } from "@/components/article/PortableTextComponents";
 import { Container } from "@/components/layout/Container";
@@ -11,10 +13,9 @@ import { TechnologyBadge } from "@/components/ui/TechnologyBadge";
 
 import { client } from "@/lib/sanity/client";
 import { urlFor } from "@/lib/sanity/image";
+import { getReadingTime } from "@/lib/utils/readingTime";
 import { articleByCategoryAndSlugQuery, relatedArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview, Technology } from "@/lib/types";
-import { getReadingTime } from "@/lib/utils/readingTime";
-import { BackToArchive } from "@/components/article/BackToArchive";
 
 // Article type
 // Describes the article data returned from Sanity
@@ -22,7 +23,7 @@ import { BackToArchive } from "@/components/article/BackToArchive";
 type Article = {
 	_id: string;
 	title: string;
-	slug?: string;
+	slug: string;
 	excerpt?: string;
 	body?: PortableTextBlock[];
 	mainImage?: SanityImage;
@@ -50,13 +51,73 @@ type Props = {
 	}>;
 };
 
+// Helper
+// Builds the full public URL for the current site
+
+function getSiteUrl() {
+	return process.env.NEXT_PUBLIC_SITE_URL || "https://olepress.vercel.app/";
+}
+
+// Page metadata
+// Generates SEO and social sharing metadata for each article page
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { category, slug } = await params;
+
+	const article = await client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
+		category,
+		slug,
+	});
+
+	if (!article) {
+		return {
+			title: "Article not found | OlePress",
+			description: "The requested article could not be found.",
+		};
+	}
+
+	const siteUrl = getSiteUrl();
+	const articleUrl = `${siteUrl}/${article.category.slug}/${article.slug}`;
+	const title = `${article.title} | OlePress`;
+	const description = article.excerpt || "Read this article on OlePress.";
+	const ogImage = article.mainImage
+		? urlFor(article.mainImage).width(1200).height(630).url()
+		: `${siteUrl}/opengraph-image.png`;
+
+	return {
+		title,
+		description,
+		openGraph: {
+			title,
+			description,
+			url: articleUrl,
+			siteName: "OlePress",
+			type: "article",
+			images: [
+				{
+					url: ogImage,
+					width: 1200,
+					height: 630,
+					alt: article.title,
+				},
+			],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title,
+			description,
+			images: [ogImage],
+		},
+	};
+}
+
 // Article page
 // Displays a single article using /category/slug structure
 
 export default async function ArticlePage({ params }: Props) {
 	const { category, slug } = await params;
 
-	// Fetch article + related projects at the same time
+	// Fetch article and related articles at the same time
 	const [article, relatedArticles] = await Promise.all([
 		client.fetch<Article | null>(articleByCategoryAndSlugQuery, {
 			category,
@@ -87,7 +148,7 @@ export default async function ArticlePage({ params }: Props) {
 
 						{/* Category label */}
 						<p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
-							{article.category?.title ?? "Uncategorized"}
+							{article.category.title}
 						</p>
 
 						{/* Title */}
