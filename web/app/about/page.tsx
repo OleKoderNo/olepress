@@ -1,34 +1,61 @@
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
+import { SectionHeading } from "@/components/home/SectionHeading";
 
 // About page
-// Introduces Ole Håvard, explains OlePress, and presents background,
-// values, and interests in a semantic page structure
+// Presents background, work experience, values, and the thinking behind OlePress
+
+const workExperience = [
+	{
+		company: "Skavl Media AS",
+		role: "Intern",
+		date: "20.03.24 – 28.06.24",
+		summary: "Worked on updating and standardising the Midtsiden.no codebase.",
+		details:
+			"I updated and standardised the codebase for Midtsiden.no using tools such as Next.js, TypeScript, Tailwind, and Copilot. The work was done independently and supported through code reviews, which gave me useful experience with structured frontend workflows and maintaining an existing codebase.",
+	},
+	{
+		company: "Kodeverket Bergen",
+		role: "Intern / Tech-lead",
+		date: "28.10.22 – 31.05.23",
+		summary: "Worked in a startup environment with both static and dynamic websites.",
+		details:
+			"I worked in a startup environment building both static and dynamic websites with CMS solutions. My responsibilities included bug fixing, code reviews, code structure, and creating learning tasks for other practice candidates. This gave me early experience with both technical responsibility and helping others learn.",
+	},
+	{
+		company: "Bjørnafjorden Næringsråd",
+		role: "Intern",
+		date: "20.09.22 – 31.10.22",
+		summary: "Redesigned their website using Wix.",
+		details:
+			"I redesigned their website in Wix and gained a stronger understanding of no-code frameworks, content structure, and how visual layout decisions affect usability and presentation.",
+	},
+	{
+		company: "Octaos",
+		role: "Intern",
+		date: "20.06.22 – 20.09.22",
+		summary: "Developed a customer overview with React, Google Maps integration, and Firebase.",
+		details:
+			"I worked on a customer overview using ReactJS, Google Maps integration, and Firebase. This gave me valuable practical experience with JavaScript, component-based UI thinking, and integrating external services into a working frontend solution.",
+	},
+];
 
 export default function AboutPage() {
 	return (
 		<main>
-			{/* Page introduction */}
+			{/* Intro section */}
 			<Section>
-				<Container className="max-w-4xl">
-					<header className="max-w-3xl">
-						<p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-neutral-400">
-							About me
-						</p>
-
-						<h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-							Ole Håvard Furuseth Bergan
-						</h1>
-
-						<p className="mt-6 text-lg leading-8 text-neutral-300">
-							I am a frontend developer from Bergen, Norway, with a strong interest in accessible
-							interfaces, readable code, and structured component-based development.
-						</p>
-					</header>
+				<Container className="max-w-5xl">
+					<SectionHeading
+						eyebrow="About me"
+						title="Frontend developer focused on structure, accessibility, and readable code"
+						description="I’m Ole Håvard Furuseth Bergan, a frontend developer from Bergen, Norway. OlePress is my portfolio and publication space, where I document projects, technical ideas, and the thinking behind the work I build."
+						level="h1"
+					/>
 				</Container>
 			</Section>
 
-			{/* Background section */}
+			{/* Professional background section */}
 			<Section className="border-t border-white/10">
 				<Container className="max-w-4xl">
 					<section aria-labelledby="background-heading">
@@ -36,38 +63,101 @@ export default function AboutPage() {
 							id="background-heading"
 							className="text-2xl font-semibold tracking-tight text-white"
 						>
-							Background
+							Professional background
 						</h2>
 
 						<div className="mt-6 space-y-6 text-lg leading-9 text-neutral-200">
 							<p>
-								I started coding in January 2022 and quickly became interested in frontend
-								development and how good structure can improve both user experience and
-								maintainability. Since then, I have worked on a range of projects, from smaller
-								browser-based tools to more structured applications using technologies such as
-								Next.js, React, TypeScript, Tailwind CSS, and Sanity.
+								I work in frontend development and have built experience through education, practice
+								placements, and project work. My background includes HTML, CSS, JavaScript,
+								TypeScript, React, Next.js, Tailwind, Sanity, Firebase, and API integration.
 							</p>
 
 							<p>
-								In 2025, I started studying Frontend Development at Noroff to continue strengthening
-								my technical foundation and to develop a deeper understanding of modern web
-								development.
-							</p>
-
-							<p>
-								I care about building interfaces that are clear, accessible, and easy to understand.
-								I also value code that is readable for other developers, because good frontend work
-								is not only about how a product looks, but also about how well it can be maintained
-								and improved over time.
+								I care about building interfaces that are clear, maintainable, and accessible. I am
+								especially interested in the relationship between frontend structure, usability, and
+								the long-term quality of a codebase.
 							</p>
 						</div>
 					</section>
 				</Container>
 			</Section>
 
-			{/* Focus section */}
+			{/* Work experience section */}
+			<Section className="border-t border-white/10">
+				<Container className="max-w-5xl">
+					<section aria-labelledby="experience-heading">
+						<h2
+							id="experience-heading"
+							className="text-2xl font-semibold tracking-tight text-white"
+						>
+							Work experience
+						</h2>
+
+						<div className="mt-8 grid gap-6">
+							{workExperience.map((job) => (
+								<article
+									key={`${job.company}-${job.date}`}
+									className="rounded-2xl border border-white/10 bg-white/5 p-6"
+								>
+									<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+										<div>
+											<h3 className="text-xl font-semibold text-white">{job.company}</h3>
+
+											<p className="mt-1 text-sm text-neutral-400">{job.role}</p>
+										</div>
+
+										<p className="text-sm text-neutral-400">{job.date}</p>
+									</div>
+
+									<p className="mt-4 text-base leading-8 text-neutral-300">{job.summary}</p>
+
+									<details className="group mt-4">
+										<summary className="cursor-pointer list-none text-sm font-medium text-white transition hover:text-neutral-300">
+											<span className="group-open:hidden">Read more</span>
+											<span className="hidden group-open:inline">Read less</span>
+										</summary>
+
+										<p className="mt-4 text-base leading-8 text-neutral-300">{job.details}</p>
+									</details>
+								</article>
+							))}
+						</div>
+					</section>
+				</Container>
+			</Section>
+
+			{/* Qualifications section */}
 			<Section className="border-t border-white/10">
 				<Container className="max-w-4xl">
+					<section aria-labelledby="qualifications-heading">
+						<h2
+							id="qualifications-heading"
+							className="text-2xl font-semibold tracking-tight text-white"
+						>
+							Qualifications
+						</h2>
+
+						<div className="mt-6 space-y-6 text-lg leading-9 text-neutral-200">
+							<p>
+								My development path has been shaped by both formal learning and practical work. I
+								have completed the AMO course Kodehode and continue building my frontend foundation
+								through structured learning and hands-on projects.
+							</p>
+
+							<p>
+								I also have training in universal design through a course in universell utforming av
+								IKT for developers and test leaders based on WCAG 2.1. Accessibility is something I
+								take seriously, and it continues to shape how I think about frontend work.
+							</p>
+						</div>
+					</section>
+				</Container>
+			</Section>
+
+			{/* Focus areas section */}
+			<Section className="border-t border-white/10">
+				<Container className="max-w-5xl">
 					<section aria-labelledby="focus-heading">
 						<h2 id="focus-heading" className="text-2xl font-semibold tracking-tight text-white">
 							What I focus on
@@ -78,8 +168,8 @@ export default function AboutPage() {
 								<h3 className="text-xl font-semibold text-white">Readable code</h3>
 
 								<p className="mt-3 text-base leading-8 text-neutral-300">
-									I like building projects with clear naming, reusable components, and a structure
-									that makes the codebase easier to read and work with.
+									I like building projects with naming, structure, and reusable components that make
+									the codebase easier to understand and maintain over time.
 								</p>
 							</article>
 
@@ -87,8 +177,8 @@ export default function AboutPage() {
 								<h3 className="text-xl font-semibold text-white">Accessibility</h3>
 
 								<p className="mt-3 text-base leading-8 text-neutral-300">
-									I care about making interfaces more usable and inclusive, and I try to approach
-									frontend work with accessibility in mind from the beginning.
+									I care about making interfaces more usable and inclusive. I try to think about
+									accessibility early, not as something added at the end.
 								</p>
 							</article>
 
@@ -96,17 +186,17 @@ export default function AboutPage() {
 								<h3 className="text-xl font-semibold text-white">Reusable systems</h3>
 
 								<p className="mt-3 text-base leading-8 text-neutral-300">
-									I enjoy creating reusable UI patterns and components that make a project more
-									consistent and easier to scale.
+									I enjoy creating reusable UI patterns, content structures, and component systems
+									that make projects easier to scale and iterate on.
 								</p>
 							</article>
 
 							<article className="rounded-2xl border border-white/10 bg-white/5 p-6">
-								<h3 className="text-xl font-semibold text-white">Presentation and structure</h3>
+								<h3 className="text-xl font-semibold text-white">Editorial presentation</h3>
 
 								<p className="mt-3 text-base leading-8 text-neutral-300">
-									I like presenting projects in a way that explains both the result and the thinking
-									behind the work, not just the finished interface.
+									I want to present projects in a way that explains the work, the reasoning, and the
+									process behind them, not only the final result.
 								</p>
 							</article>
 						</div>
@@ -114,37 +204,32 @@ export default function AboutPage() {
 				</Container>
 			</Section>
 
-			{/* Personal section */}
+			{/* Outside work section */}
 			<Section className="border-t border-white/10">
 				<Container className="max-w-4xl">
-					<section aria-labelledby="personal-heading">
-						<h2 id="personal-heading" className="text-2xl font-semibold tracking-tight text-white">
-							Outside development
+					<section aria-labelledby="outside-heading">
+						<h2 id="outside-heading" className="text-2xl font-semibold tracking-tight text-white">
+							Outside work
 						</h2>
 
 						<div className="mt-6 space-y-6 text-lg leading-9 text-neutral-200">
 							<p>
-								Outside coding, I enjoy traveling and volunteering. Traveling is an important
-								personal interest for me and gives me the chance to experience new places, cultures,
-								and perspectives.
+								Outside development, volunteering has been an important part of my life for several
+								years. It has given me experience with responsibility, communication, cooperation,
+								and contributing to something larger than myself.
 							</p>
 
 							<p>
-								Volunteering has also been a meaningful part of my life for years. It has given me
-								experience with responsibility, cooperation, and contributing to something larger
-								than myself.
-							</p>
-
-							<p>
-								I also play video games in my free time, mostly as a way to relax, disconnect, and
-								take a break from stress.
+								I also enjoy traveling and use games mainly as a way to relax and disconnect in my
+								free time. For me, that is personal recreation rather than part of my professional
+								identity.
 							</p>
 						</div>
 					</section>
 				</Container>
 			</Section>
 
-			{/* About OlePress section */}
+			{/* OlePress section */}
 			<Section className="border-t border-white/10">
 				<Container className="max-w-4xl">
 					<section aria-labelledby="olepress-heading">
@@ -155,14 +240,13 @@ export default function AboutPage() {
 						<div className="mt-6 space-y-6 text-lg leading-9 text-neutral-200">
 							<p>
 								I did not want a portfolio that only listed projects and links. I wanted a space
-								where I could present work, explain decisions, and show more of the thinking behind
-								what I build.
+								where I could show both the work itself and the thinking behind it.
 							</p>
 
 							<p>
-								OlePress is my way of combining portfolio work with a more editorial format. It
-								gives me room to write about projects, process, interests, and ideas in a way that
-								feels more personal and complete than a traditional portfolio page.
+								OlePress is my way of combining a portfolio with a more editorial format. It gives
+								me room to document projects, explain technical choices, write reflections, and
+								present my work in a way that feels more complete than a traditional portfolio page.
 							</p>
 						</div>
 					</section>
