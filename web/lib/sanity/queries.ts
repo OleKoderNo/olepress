@@ -161,3 +161,12 @@ export const technologyArticleCountQuery = groq`
     ]
   )
 `;
+
+// Search articles query
+// Fetches all searchable article metadata for the search page
+
+export const searchArticlesQuery = groq`
+  *[_type == "article"] | order(publishedAt desc) {
+    ${articleFields}
+  }
+`;
