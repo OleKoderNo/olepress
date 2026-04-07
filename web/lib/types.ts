@@ -6,13 +6,13 @@ import type { Image as SanityImage, PortableTextBlock } from "sanity";
 export type Technology = {
 	_id: string;
 	title: string;
-	slug?: string;
+	slug: string;
 	skillLevel?: number;
 };
 
 export type ArticleCategory = {
-	title?: string;
-	slug?: string;
+	title: string;
+	slug: string;
 };
 
 export type ArticleAuthor = {
@@ -25,7 +25,7 @@ export type ArticlePreview = {
 	excerpt?: string;
 	body?: PortableTextBlock[];
 	mainImage?: SanityImage;
-	slug?: string;
+	slug: string;
 	category: ArticleCategory;
 	author?: ArticleAuthor;
 	technologies?: Technology[];
@@ -40,4 +40,12 @@ export type CategoryMeta = {
 	title: string;
 	description?: string;
 	slug: string;
+};
+
+export type TechnologyMeta = {
+	_id: string;
+	title: string;
+	slug: string;
+	skillLevel?: number;
+	featured?: boolean;
 };

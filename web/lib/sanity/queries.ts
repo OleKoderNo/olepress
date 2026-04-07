@@ -2,7 +2,7 @@ import { groq } from "next-sanity";
 
 // Sanity queries
 // Stores reusable GROQ queries for homepage, category pages, article pages,
-// related content, and featured homepage content
+// related content, featured homepage content, and technology pages
 
 // Shared article fields
 // Reused across multiple queries to keep the response shape consistent
@@ -42,30 +42,7 @@ export const articlesQuery = groq`
     _type == "article" &&
     (!defined(featured) || featured != true)
   ] | order(publishedAt desc)[0...6] {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body,
-    mainImage,
-    publishedAt,
-    isProject,
-    isPremium,
-    githubUrl,
-    liveUrl,
-    "category": category->{
-      title,
-      "slug": slug.current
-    },
-    "author": author->{
-      name
-    },
-    "technologies": technologies[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      skillLevel
-    }
+    ${articleFields}
   }
 `;
 
@@ -143,4 +120,44 @@ export const relatedArticlesQuery = groq`
   ] | order(publishedAt desc)[0...3] {
     ${articleFields}
   }
+`;
+
+// Technology metadata query
+// Fetches one technology document for the archive page header
+
+export const technologyMetaQuery = groq`
+  *[
+    _type == "technology" &&
+    slug.current == $slug
+  ][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    skillLevel,
+    featured
+  }
+`;
+
+// Technology articles query
+// Fetches paginated articles that reference one technology
+
+export const technologyArticlesQuery = groq`
+  *[
+    _type == "article" &&
+    $slug in technologies[]->slug.current
+  ] | order(publishedAt desc)[$start...$end] {
+    ${articleFields}
+  }
+`;
+
+// Technology article count query
+// Counts how many articles reference one technology
+
+export const technologyArticleCountQuery = groq`
+  count(
+    *[
+      _type == "article" &&
+      $slug in technologies[]->slug.current
+    ]
+  )
 `;

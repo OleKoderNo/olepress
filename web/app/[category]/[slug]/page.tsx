@@ -219,6 +219,7 @@ export default async function ArticlePage({ params }: Props) {
 										key={technology._id}
 										title={technology.title}
 										skillLevel={technology.skillLevel}
+										href={`/technology/${technology.slug}`}
 									/>
 								))}
 							</div>
